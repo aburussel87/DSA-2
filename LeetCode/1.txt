@@ -1,0 +1,6 @@
+// for submission
+--  option + s 
+// to test
+-- option + t
+// if doesnt work, please relogin
+-- leetcode sign up on command palette
