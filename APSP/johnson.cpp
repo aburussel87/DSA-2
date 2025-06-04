@@ -1,7 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <limits>
-#include <algorithm>
+#include<bits/stdc++.h>
 
 #define INF std::numeric_limits<int>::max()
 

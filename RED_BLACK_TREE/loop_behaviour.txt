@@ -1,0 +1,47 @@
+
+===========================================
+🔴 Red-Black Tree Insertion Fix-Up: Loop Behavior
+(Cases 1–3 Explanation from CLRS)
+===========================================
+
+🔴 Case 1: Uncle is red
+
+✅ Does the loop repeat after this case?
+Yes — the loop repeats.
+
+➤ Why?
+    • You recolor z.p, uncle, and z.p.p.
+    • Then you move z up to z.p.p, which is now red (you just recolored it).
+    • If z.p.p’s parent is also red, the loop condition is still true: z.p.color == RED.
+
+👉 So Case 1 does not end the loop — it moves the problem up the tree and repeats.
+
+----------------------------------------------------
+
+⚫ Case 2: Uncle is black, and z is the inner child
+
+✅ Does the loop repeat after this case?
+No — this case is preparation only.
+
+➤ Why?
+    • In Case 2, you do a rotation (left or right) at z.p, but don’t move up or change colors yet.
+    • The structure is changed so that Case 3 can be applied immediately in the next lines.
+    • The loop does not repeat here — you immediately enter Case 3 logic in the same iteration.
+
+👉 So Case 2 does not cause the loop to repeat, but sets up Case 3 within the same iteration.
+
+----------------------------------------------------
+
+🔴 Case 3: Uncle is black, and z is the outer child
+
+✅ Does the loop repeat after this case?
+No — the loop exits.
+
+➤ Why?
+    • You recolor z.p and z.p.p.
+    • You then rotate at z.p.p, fixing the red-red violation.
+    • Crucially: z no longer has a red parent after this.
+
+👉 So Case 3 terminates the loop — Red-Black properties are restored locally.
+
+=============================================

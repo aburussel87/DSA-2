@@ -1,0 +1,90 @@
+==========================================================
+🧠 Red-Black Tree Insertion Fix-Up: All 6 Cases (CLRS)
+==========================================================
+
+🧠 Precondition: Inserted node z is RED
+
+The only Red-Black property that can be violated after insertion is:
+> No red node can have a red child (i.e. no two reds in a row)
+
+So we fix the tree depending on the structure around z.
+
+==========================================================
+🔴 CASES WHEN z.p IS THE LEFT CHILD OF z.p.p
+==========================================================
+
+🔻 Case 1 (Left-Side): Uncle is red
+- z.p is red
+- z.p.p is black
+- Uncle y = z.p.p.right is also red
+
+➤ Action:
+- Recolor z.p and y (uncle) to black
+- Recolor z.p.p to red
+- Move z pointer up to z.p.p for further checking
+
+🔻 Case 2 (Left-Side): Uncle is black, and z is right child
+- z.p is red
+- Uncle y = z.p.p.right is black
+- z is right child of z.p (inner case)
+
+➤ Action:
+- Left-rotate at z.p to make it a "line"
+- Now it's Case 3
+
+🔻 Case 3 (Left-Side): Uncle is black, and z is left child
+- z.p is red
+- Uncle y = z.p.p.right is black
+- z is left child of z.p (outer case)
+
+➤ Action:
+- Recolor z.p to black, z.p.p to red
+- Right-rotate at z.p.p
+
+==========================================================
+🔴 CASES WHEN z.p IS THE RIGHT CHILD OF z.p.p
+==========================================================
+
+🔻 Case 1 (Right-Side): Uncle is red
+- z.p is red
+- z.p.p is black
+- Uncle y = z.p.p.left is also red
+
+➤ Action:
+- Recolor z.p and y to black
+- Recolor z.p.p to red
+- Move z pointer up to z.p.p
+
+🔻 Case 2 (Right-Side): Uncle is black, and z is left child
+- z.p is red
+- Uncle y = z.p.p.left is black
+- z is left child of z.p (inner case)
+
+➤ Action:
+- Right-rotate at z.p
+- Now it's Case 3
+
+🔻 Case 3 (Right-Side): Uncle is black, and z is right child
+- z.p is red
+- Uncle y = z.p.p.left is black
+- z is right child of z.p (outer case)
+
+➤ Action:
+- Recolor z.p to black, z.p.p to red
+- Left-rotate at z.p.p
+
+==========================================================
+✅ Summary Table of All 6 Cases
+(without referring to shapes like line/triangle)
+==========================================================
+
+| Case | z.p Position | Uncle Color | z Position            | Action                                                             |
+|------|--------------|-------------|------------------------|--------------------------------------------------------------------|
+| 1    | Left child   | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward |
+| 2    | Left child   | Black       | Right child of z.p     | Left-rotate at z.p; proceed to Case 3                             |
+| 3    | Left child   | Black       | Left child of z.p      | Recolor z.p to black, grandparent to red; right-rotate at grandparent |
+| 1    | Right child  | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward |
+| 2    | Right child  | Black       | Left child of z.p      | Right-rotate at z.p; proceed to Case 3                            |
+| 3    | Right child  | Black       | Right child of z.p     | Recolor z.p to black, grandparent to red; left-rotate at grandparent  |
+
+
