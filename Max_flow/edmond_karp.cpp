@@ -1,5 +1,4 @@
 #include<bits/stdc++.h>
-using namespace std;
 
 int bfs(vector<vector<int>> &adj, vector<vector<int>> &capacity, vector<vector<int>> &flow, vector<int> &parent,int s, int t){
     fill(parent.begin(),parent.end(),-1);
