@@ -2,89 +2,136 @@
 🧠 Red-Black Tree Insertion Fix-Up: All 6 Cases (CLRS)
 ==========================================================
 
-🧠 Precondition: Inserted node z is RED
+Precondition:
+- Inserted node z is always RED.
+- Tree may violate only **one** Red-Black Tree property:
 
-The only Red-Black property that can be violated after insertion is:
-> No red node can have a red child (i.e. no two reds in a row)
 
-So we fix the tree depending on the structure around z.
+
+
+
+VIOLATION OF PROPERTIES
+============================================================
+❓Why Properties 1, 3, and 5 are not violated
+
+✅ Property 1: Every node is either red or black
+Never violated because:
+When we insert, we explicitly color the new node red.
+All existing nodes remain either red or black.
+We never assign an illegal color.
+✅ Property 3: All leaves (NIL/null) are black
+Never violated because:
+We never change or color the NIL leaves — they are implicitly black and untouched.
+When inserting a new node, it becomes a parent of two NIL children, which are still black.
+✅ Property 5: All paths from any node to its leaves contain the same number of black nodes
+Not violated during insertion because:
+The new node is red, so it doesn't add a black node to any path.
+Therefore, the number of black nodes on all paths stays the same.
+This is why we insert new nodes as red, to avoid violating black-height initially.
+🚨 Properties That Can Be Violated
+
+❌ Property 2: The root is black
+Can be violated if the inserted node becomes the root, since we insert it as red.
+✔️ Fixed by explicitly recoloring the root to black at the end.
+❌ Property 4: No red node has a red child
+This is the most common violation after insertion.
+Occurs when a red node (the inserted z) has a red parent (z.p).
+✔️ Fixed using rotations and recoloring (cases 1–3 / 6 total).
+
+
+-- Other properties are not violated during insertion
+This violation must be fixed to restore all 5 Red-Black properties:
+============================================================
+
+
+
+
+----------------------------------------------------------
+🧱 Red-Black Tree Properties:
+----------------------------------------------------------
+1. Every node is either red or black.
+2. The root is black.
+3. All leaves (NIL) are black.
+4. If a node is red, both its children are black.  <<-- ONLY violation possible after insert
+5. Every path from a node to its descendant NIL nodes has the same number of black nodes.
+
+----------------------------------------------------------
+🧩 If z->parent is RED, then:
+----------------------------------------------------------
+- It must have a parent too (i.e. z->parent->parent != NIL)
+- Because root is always black → z->parent cannot be root.
+
+So we must analyze the structure around z:
+- z: newly inserted node
+- z.p: parent of z
+- z.p.p: grandparent of z
+- y: uncle of z (sibling of z.p)
 
 ==========================================================
-🔴 CASES WHEN z.p IS THE LEFT CHILD OF z.p.p
+🔴 CASES WHEN z.p IS THE LEFT CHILD OF z.p.p   
 ==========================================================
 
-🔻 Case 1 (Left-Side): Uncle is red
-- z.p is red
-- z.p.p is black
-- Uncle y = z.p.p.right is also red
+🔻 Case 1 (Left-Side): Uncle is RED
+Violation: z and z.p are both RED → violates property 4
 
-➤ Action:
-- Recolor z.p and y (uncle) to black
-- Recolor z.p.p to red
-- Move z pointer up to z.p.p for further checking
+Fix:
+- Recolor z.p and y to BLACK
+- Recolor z.p.p to RED
+- Move z up to z.p.p (may need further fixing)
 
-🔻 Case 2 (Left-Side): Uncle is black, and z is right child
-- z.p is red
-- Uncle y = z.p.p.right is black
-- z is right child of z.p (inner case)
+🔻 Case 2 (Left-Side): Uncle is BLACK, z is RIGHT child (Inner case)
+Violation: Same red-red violation
 
-➤ Action:
-- Left-rotate at z.p to make it a "line"
-- Now it's Case 3
+Fix:
+- Left-rotate at z.p to convert to Case 3 (outer case)
 
-🔻 Case 3 (Left-Side): Uncle is black, and z is left child
-- z.p is red
-- Uncle y = z.p.p.right is black
-- z is left child of z.p (outer case)
+🔻 Case 3 (Left-Side): Uncle is BLACK, z is LEFT child (Outer case)
+Violation: Same red-red violation
 
-➤ Action:
-- Recolor z.p to black, z.p.p to red
+Fix:
+- Recolor z.p to BLACK, z.p.p to RED
 - Right-rotate at z.p.p
 
 ==========================================================
 🔴 CASES WHEN z.p IS THE RIGHT CHILD OF z.p.p
 ==========================================================
 
-🔻 Case 1 (Right-Side): Uncle is red
-- z.p is red
-- z.p.p is black
-- Uncle y = z.p.p.left is also red
+🔻 Case 1 (Right-Side): Uncle is RED
+Violation: z and z.p are both RED → violates property 4
 
-➤ Action:
-- Recolor z.p and y to black
-- Recolor z.p.p to red
-- Move z pointer up to z.p.p
+Fix:
+- Recolor z.p and y to BLACK
+- Recolor z.p.p to RED
+- Move z up to z.p.p
 
-🔻 Case 2 (Right-Side): Uncle is black, and z is left child
-- z.p is red
-- Uncle y = z.p.p.left is black
-- z is left child of z.p (inner case)
+🔻 Case 2 (Right-Side): Uncle is BLACK, z is LEFT child (Inner case)
+Violation: Same red-red violation
 
-➤ Action:
-- Right-rotate at z.p
-- Now it's Case 3
+Fix:
+- Right-rotate at z.p to convert to Case 3 (outer case)
 
-🔻 Case 3 (Right-Side): Uncle is black, and z is right child
-- z.p is red
-- Uncle y = z.p.p.left is black
-- z is right child of z.p (outer case)
+🔻 Case 3 (Right-Side): Uncle is BLACK, z is RIGHT child (Outer case)
+Violation: Same red-red violation
 
-➤ Action:
-- Recolor z.p to black, z.p.p to red
+Fix:
+- Recolor z.p to BLACK, z.p.p to RED
 - Left-rotate at z.p.p
 
 ==========================================================
 ✅ Summary Table of All 6 Cases
-(without referring to shapes like line/triangle)
 ==========================================================
 
-| Case | z.p Position | Uncle Color | z Position            | Action                                                             |
-|------|--------------|-------------|------------------------|--------------------------------------------------------------------|
-| 1    | Left child   | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward |
-| 2    | Left child   | Black       | Right child of z.p     | Left-rotate at z.p; proceed to Case 3                             |
-| 3    | Left child   | Black       | Left child of z.p      | Recolor z.p to black, grandparent to red; right-rotate at grandparent |
-| 1    | Right child  | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward |
-| 2    | Right child  | Black       | Left child of z.p      | Right-rotate at z.p; proceed to Case 3                            |
-| 3    | Right child  | Black       | Right child of z.p     | Recolor z.p to black, grandparent to red; left-rotate at grandparent  |
+| Case | z.p Position | Uncle Color | z Position             | Action                                                                   |
+|------|--------------|-------------|------------------------|--------------------------------------------------------------------------|
+| 1    | Left child   | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward        |
+| 2    | Left child   | Black       | Right child of z.p     | Left-rotate at z.p; proceed to Case 3                                    |
+| 3    | Left child   | Black       | Left child of z.p      | Recolor z.p to black, grandparent to red; right-rotate at grandparent    |
+| 1    | Right child  | Red         | Doesn’t matter         | Recolor z.p and uncle to black, grandparent to red; move z upward        |
+| 2    | Right child  | Black       | Left child of z.p      | Right-rotate at z.p; proceed to Case 3                                   |
+| 3    | Right child  | Black       | Right child of z.p     | Recolor z.p to black, grandparent to red; left-rotate at grandparent     |
 
-
+==========================================================
+🌳 Final Step:
+==========================================================
+Always ensure root is BLACK after all fix-up.
+(Protects Property 2)

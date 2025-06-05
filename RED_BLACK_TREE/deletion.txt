@@ -1,0 +1,141 @@
+==========================================================
+🧠 Red-Black Tree Deletion Fix-Up: All 4 Main Cases (CLRS)
+==========================================================
+
+🧠 Precondition:
+- Deletion might cause a violation of this Red-Black Property:
+
+Violation:
+🛑 Every path from a node to its descendant NIL nodes must have the same number of black nodes (Property 5)
+
+This can happen when a black node is removed or replaced.
+To model this, we introduce the concept of "double black" (extra blackness on node x).
+
+
+
+
+-----------------------------------------------
+ Key Variables:
+-----------------------------------------------
+- z : The node to be deleted (target).
+- y : The node that is actually removed from the tree.
+      - If z has < 2 children → y = z
+      - If z has 2 children → y = TREE-SUCCESSOR(z)
+      - y always has at most ONE child.
+- x : The non-null child of y (or T.nil if y has no children).
+      - This node replaces y and may carry a "double-black" problem if y was black.
+- w : The sibling of x (i.e., the other child of x's parent).
+
+-----------------------------------------------
+ Fact 1: y always has at most one child
+-----------------------------------------------
+- If z has < 2 children → we delete z directly.
+- If z has 2 children → we choose y = TREE-SUCCESSOR(z)
+  => y is the minimum of z’s right subtree => has no left child
+  => So y has at most one child (its right child).
+
+-----------------------------------------------
+ Fact 2: Fix-up is needed only if a black node is removed
+-----------------------------------------------
+- Deleting a red node does NOT violate red-black properties.
+- Deleting a black node reduces the black-height in one path ⇒ fix required.
+
+-----------------------------------------------
+ Fact 3: T.nil (leaf sentinel) is black
+-----------------------------------------------
+- All leaves (T.nil nodes) are black by definition.
+- Simplifies handling of leaf deletion.
+
+
+
+
+
+----------------------------------------------------------
+🧱 Red-Black Tree Properties Affected:
+----------------------------------------------------------
+- Property 2: Root is black (may be violated if root becomes double black)
+- Property 4: Red node must have black children
+- ✅ Property 5: Black-height consistency → main focus of deletion fix-up
+
+----------------------------------------------------------
+🧩 Terminology:
+----------------------------------------------------------
+- x: current node with extra black (may be a NIL or actual node)
+- x.p: parent of x
+- w: sibling of x (sibling of node where double black exists)
+
+==========================================================
+🔴 CASE 1: Sibling w is RED
+----------------------------------------------------------
+- x.p is BLACK
+- w is RED
+- w's children are BLACK
+
+🛠 Fix:
+- Recolor w to BLACK, x.p to RED
+- Left-rotate at x.p (if x is left child)
+- New sibling becomes BLACK → reduce to another case (2, 3, or 4)
+
+==========================================================
+🔴 CASE 2: Sibling w is BLACK, and both of w’s children are BLACK
+----------------------------------------------------------
+- w is BLACK
+- w.left and w.right are BLACK
+
+🛠 Fix:
+- Recolor w to RED
+- If x.p is RED: recolor x.p to BLACK, fix done
+- Else: move double black upward to x.p → x = x.p
+
+==========================================================
+🔴 CASE 3: Sibling w is BLACK, w.left is RED, w.right is BLACK
+----------------------------------------------------------
+- x is left child of x.p
+- w is BLACK
+- w.left is RED, w.right is BLACK
+
+🛠 Fix:
+- Recolor w.left to BLACK
+- Recolor w to RED
+- Right-rotate at w
+- Now it's Case 4 with a proper outer red child
+
+(Mirror case if x is right child: w.right is RED, w.left is BLACK)
+
+==========================================================
+🔴 CASE 4: Sibling w is BLACK, w.right is RED
+----------------------------------------------------------
+- x is left child of x.p
+- w is BLACK
+- w.right is RED
+
+🛠 Fix:
+- Recolor w to x.p’s color
+- Recolor x.p to BLACK
+- Recolor w.right to BLACK
+- Left-rotate at x.p
+- Fix done — break the loop
+
+(Mirror case if x is right child: w.left is RED)
+
+==========================================================
+✅ Summary Table of All 4 Cases
+==========================================================
+
+| Case | Sibling w | w's Children     | Action                                                               |
+|------|-----------|------------------|----------------------------------------------------------------------|
+| 1    | RED       | Doesn’t matter   | Recolor w + x.p, rotate at x.p, reduce to Case 2/3/4                 |
+| 2    | BLACK     | Both BLACK       | Recolor w to RED, propagate fix-up to x.p                            |
+| 3    | BLACK     | Inner child RED  | Rotate at w, transform to Case 4                                     |
+| 4    | BLACK     | Outer child RED  | Recolor, rotate at x.p, fix complete                                 |
+
+🔁 Note:
+- Cases 1–3 prepare the tree for Case 4
+- Case 2 may cause fix-up to continue upward
+- Case 4 completes the fix in one step
+
+==========================================================
+🌳 Final Step:
+==========================================================
+Always ensure root is BLACK at the end.
+This reestablishes Red-Black Property 2 (root must be black).
