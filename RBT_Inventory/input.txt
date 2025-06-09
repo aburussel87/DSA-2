@@ -27,3 +27,15 @@ Itr
 Clr                    
 S                     
 Itr
+AI 5 "A" 4
+AI 10 "B" 10
+AI 15 "C" 15
+AI 20 "D" 20
+AI 25 "E" 25
+AI 30 "F" 30
+AI 35 "G" 35
+AI 40 "H" 40
+Itr
+Clr
+Clr
+S

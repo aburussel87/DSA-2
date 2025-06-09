@@ -1,6 +1,7 @@
 #include "RBT.h"
 #include <vector>
 #include <string>
+#include <fstream>
 using namespace std;
 
 class INVENTORY {
@@ -15,49 +16,60 @@ public:
         delete tree;
     }
 
-    bool AddItem(string id, string name, string amount) {
+    void AddItem(ofstream& out, string id, string name, string amount) {
         if (tree->insert(stoi(id), name, stoi(amount))) {
-            tree->print_RBT();
-            return true;
+            tree->print_RBT(out);
         }
-        return false;
     }
 
-    bool BuyItem(string id, string amount) {
+    void BuyItem(ofstream& out, string id, string amount) {
         if (tree->decrease_amount(stoi(id), stoi(amount))) {
-            tree->print_RBT();
-            return true;
+            tree->print_RBT(out);
+            return;
         }
-        tree->print_RBT();
-        return false;
+        tree->print_RBT(out);
+        cout<<"Not Available\n";
+        out<<"Not Available\n";
     }
 
-    int CheckItem(string id) {
+    void CheckItem(ofstream& out, string id) {
         Node* item = tree->find(stoi(id));
         if (item == nullptr) {
-            return -1;
+            cout<<"Not Available\n";
+            out<<"Not Available\n";
+            return ;
         }
-        return item->amount;
+        cout << "Stock Left: " << item->amount << endl;
+        out << "Stock Left: " << item->amount << endl;
     }
 
-    bool ClearInventory() {
+    void ClearInventory(ofstream& out) {
         if (tree->length() == 0) {
-            return false;
+            cout<<"Unsuccessful\n";
+            out<<"Unsuccessful\n";
+            return;
         }
         delete tree;
         tree = new RBTREE();
-        return true;
+        cout<<"Successful\n";
+        out<<"Successful\n";
     }
 
-    bool Empty() {
-        return tree->length() == 0;
+    void Empty(ofstream& out) {
+        if(tree->length() == 0){
+            cout<<"Yes\n";
+            out<<"Yes\n";
+            return;
+        }
+        cout<<"No\n";
+        out<<"No\n";
     }
 
-    int InventorySize() {
-        return tree->length();
+    void InventorySize(ofstream& out) {
+        cout<< tree->length()<<endl;
     }
 
-    void ListInventory() {
-        tree->sortedList();
+    void ListInventory(ofstream& out) {
+        tree->sortedList(out);
     }
 };

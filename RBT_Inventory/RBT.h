@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 using namespace std;
 
 #define RED_TXT "\033[1;31m"
@@ -43,14 +44,15 @@ class RBTREE
     Node *minimum(Node *node);
     void destroy(Node *node);
     Node *find(Node *node, int id);
-    void preOrder(Node *root);
-    void sortedList_helper(Node *root);
-    void color_print(Color color, const string &s)
+    void preOrder(ofstream& out, Node *root);
+    void sortedList_helper(ofstream& out, Node *root);
+    void color_print(ofstream& out, Color color, const string &s)
     {
         if (color == RED)
-            cout << RED_TXT << s << RESET;
+            cout << RED_TXT << s << RESET , out<<s;
         else
-            cout << BLUE_TXT << s << RESET;
+            cout << BLUE_TXT << s << RESET , out<<s;
+            
     }
 
 public:
@@ -61,14 +63,15 @@ public:
     bool remove(int id);
     Node *find(int id) { return find(root, id); }
     bool decrease_amount(int id, int amount);
-    void print_RBT()
+    void print_RBT(ofstream& out)
     {
-        preOrder(root);
+        preOrder(out,root);
         cout << endl;
+        out<< endl;
     }
-    void sortedList()
+    void sortedList(ofstream& out)
     {
-        sortedList_helper(root);
+        sortedList_helper(out,root);
     }
     int length() { return size; }
 };
@@ -388,34 +391,36 @@ bool RBTREE::decrease_amount(int id, int amount)
     return true;
 }
 
-void RBTREE::preOrder(Node *root)
+void RBTREE::preOrder(ofstream& out,Node *root)
 {
     if (root == NIL)
         return;
 
     string label = to_string(root->id) + "_" + root->name;
-    color_print(root->col, label);
+    color_print(out, root->col, label);
 
     if (root->lchild != NIL || root->rchild != NIL)
-        cout << "(";
-    preOrder(root->lchild);
+        cout << "(" , out<<"(";
+    preOrder(out,root->lchild);
     if (root->lchild != NIL || root->rchild != NIL)
-        cout << ",";
-    preOrder(root->rchild);
+        cout << ",",out << ",";
+    preOrder(out,root->rchild);
     if (root->lchild != NIL || root->rchild != NIL)
-        cout << ")";
+        cout << ")",out << ")";
 }
 
-void RBTREE::sortedList_helper(Node *root)
+void RBTREE::sortedList_helper(ofstream& out, Node *root)
 {
     if (root == NIL)
         return;
-    sortedList_helper(root->lchild);
+    sortedList_helper(out,root->lchild);
     string  s = to_string(root->id);
-    color_print(root->col,s);
+    color_print(out, root->col,s);
     cout<<" => ";
+    out<<" => ";
     s = root->name + " ("+to_string(root->amount)+")";
-    color_print(root->col,s);
+    color_print(out, root->col,s);
     cout<<endl;
-    sortedList_helper(root->rchild);
+    out<<endl;
+    sortedList_helper(out,root->rchild);
 }

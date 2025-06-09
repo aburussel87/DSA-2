@@ -22,11 +22,16 @@ vector<string> splitter(const string &s, char delimiter)
 
 int main()
 {
+    ofstream outfile("output.txt");
     ifstream infile("input.txt");
     INVENTORY myInventory;
+    if(!outfile.is_open()){
+        cout<<"Error opening file!"<<endl;
+        return 1;
+    }
     if (!infile.is_open())
     {
-        cerr << "Error opening file!" << endl;
+        cout << "Error opening file!"<<endl;
         return 1;
     }
 
@@ -37,52 +42,31 @@ int main()
         orders = splitter(line, ' ');
         if (orders[0] == "AI")
         {
-            myInventory.AddItem(orders[1], orders[2], orders[3]);
+            myInventory.AddItem(outfile, orders[1], orders[2], orders[3]);
         }
         else if (orders[0] == "BI")
         {
-            if (!myInventory.BuyItem(orders[1], orders[2]))
-            {
-                cout << "Not Available\n";
-            }
+            myInventory.BuyItem(outfile,orders[1], orders[2]);
         }
         else if (orders[0] == "CI")
         {
-            int total = myInventory.CheckItem(orders[1]);
-            if (total == -1)
-            {
-                cout << "Not Available\n";
-                continue;
-            }
-            cout << "Stock Left: " << total << endl;
+            myInventory.CheckItem(outfile,orders[1]);
         }
         else if (orders[0] == "Clr")
         {
-            if (myInventory.ClearInventory())
-            {
-                cout << "Successful\n";
-                continue;
-            }
-            cout << "Unsuccessful\n";
+            myInventory.ClearInventory(outfile);
         }
         else if (orders[0] == "S")
         {
-            cout << myInventory.InventorySize() << endl;
+            myInventory.InventorySize(outfile);
         }
         else if (orders[0] == "Em")
         {
-            if (myInventory.Empty())
-            {
-                cout << "Yes\n";
-            }
-            else
-            {
-                cout << "No\n";
-            }
+            myInventory.Empty(outfile);
         }
         else if (orders[0] == "Itr")
         {
-            myInventory.ListInventory();
+            myInventory.ListInventory(outfile);
         }
         else
         {
