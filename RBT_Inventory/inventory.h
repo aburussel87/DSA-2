@@ -67,6 +67,7 @@ public:
 
     void InventorySize(ofstream& out) {
         cout<< tree->length()<<endl;
+        out<< tree->length()<<endl;
     }
 
     void ListInventory(ofstream& out) {

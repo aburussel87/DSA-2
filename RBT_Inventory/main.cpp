@@ -1,5 +1,9 @@
 #include "inventory.h"
-#include <bits/stdc++.h>
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <sstream>
+using namespace std;
 
 vector<string> splitter(const string &s, char delimiter)
 {
@@ -10,7 +14,7 @@ vector<string> splitter(const string &s, char delimiter)
     {
         if (!token.empty())
         {
-            if (token.front() == '"')
+            if (token.front() == '"' && token[token.length()-1] == '"')
             {
                 token = token.substr(1, token.length() - 2);
             }
@@ -73,7 +77,5 @@ int main()
             cout << "Enter valid command\n";
         }
     }
-
-    infile.close();
     return 0;
 }

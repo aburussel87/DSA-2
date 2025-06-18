@@ -22,11 +22,13 @@ Not Available
 5_Mouse(1_Charger,13_Keyboard(10_Phone,15_MonitorPro))
 5_Mouse(1_Charger,13_Keyboard(,15_MonitorPro))
 No
+4
 1 => Charger (2)
 5 => Mouse (2)
 13 => Keyboard (4)
 15 => MonitorPro (20)
 Successful
+0
 5_A
 5_A(,10_B)
 10_B(5_A,15_C)
@@ -45,3 +47,4 @@ Successful
 40 => H (40)
 Successful
 Unsuccessful
+0
