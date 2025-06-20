@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define RED   "\033[31m"
+#define RESET "\033[0m"
 
 struct node
 {
@@ -146,6 +148,50 @@ class AVL_TREE
         print_inorder_helper(curr->rchild);
     }
 
+    void print_tree_helper(node* root){
+        if (root == nullptr)
+        return;
+
+    cout << root->value << "_" << RED << getBfactor(root) << RESET;
+
+    if (root->lchild || root->rchild) {
+        cout << " ( ";
+
+        if (root->lchild) {
+            print_tree_helper(root->lchild);
+        } else {
+            cout << "null";
+        }
+
+        cout << ", ";
+
+        if (root->rchild) {
+            print_tree_helper(root->rchild);
+        } else {
+            cout << "null";
+        }
+
+        cout << " )";
+    }
+
+    }
+
+    void printSpaces(int count) {
+    for (int i = 0; i < count; ++i)
+        cout << " ";
+}
+
+void print_tree_vertical(node* root, int space = 0, int indent = 6) {
+    if (root == nullptr)
+        return;
+    space += indent;
+    print_tree_vertical(root->rchild, space);
+    cout << endl;
+    printSpaces(space - indent);
+    cout << root->value << "(" << RED << getBfactor(root) << RESET << ")" << endl;
+    print_tree_vertical(root->lchild, space);
+}
+
 public:
     AVL_TREE()
     {
@@ -171,5 +217,13 @@ public:
     {
         print_inorder_helper(root);
         cout << endl;
+    }
+    void print_tree(){
+        print_tree_helper(root);
+        cout<<endl;
+    }
+    void print_bst(){
+        print_tree_vertical(root);
+        cout<<endl;
     }
 };
