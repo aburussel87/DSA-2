@@ -1,3 +1,15 @@
+
+/*
+n m                           // n = number of people, m = number of chocolate types
+a1 a2 ... an                 // array of size n: max chocolates each person can buy
+b1 b2 ... bm                 // array of size m: available chocolates of each type
+k                            // number of preferences
+p1 t1 c1                     // person p1 wants c1 of type t1
+p2 t2 c2                     // person p2 wants c2 of type t2
+...
+pk tk ck
+*/
+
 #include <bits/stdc++.h>
 using namespace std;
 
