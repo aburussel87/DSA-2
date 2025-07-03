@@ -1,0 +1,24 @@
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,39,391.80,N/A,329.10,N/A,40,350.05,N/A,262.70,N/A
+Linear Probing,71,406.15,1.200000,456.40,2.900000,69,424.90,1.200000,372.85,2.200000
+Double Hashing,62,1581.25,1.050000,746.05,4.450000,63,637.45,1.250000,471.00,1.750000
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,63,401.64,N/A,258.36,N/A,57,381.72,N/A,293.40,N/A
+Linear Probing,124,496.72,1.800000,488.40,3.440000,117,458.24,1.600000,631.60,4.200000
+Double Hashing,112,686.64,1.760000,908.36,2.320000,96,618.36,1.400000,601.76,2.520000
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,70,348.57,N/A,264.03,N/A,78,380.50,N/A,229.20,N/A
+Linear Probing,260,466.67,1.633333,1612.50,17.533333,188,483.43,1.833333,501.37,4.100000
+Double Hashing,123,630.67,1.366667,783.37,5.066667,140,630.50,1.433333,480.60,2.600000
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,96,365.40,N/A,341.71,N/A,94,385.66,N/A,229.77,N/A
+Linear Probing,282,433.46,1.857143,938.11,10.400000,265,447.60,2.000000,811.89,8.628571
+Double Hashing,231,613.17,1.914286,596.29,3.628571,276,540.46,1.457143,658.37,4.314286
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,118,305.23,N/A,196.80,N/A,124,496.95,N/A,318.75,N/A
+Linear Probing,536,480.20,3.125000,669.70,7.575000,535,479.15,1.875000,975.98,8.725000
+Double Hashing,408,567.60,2.275000,800.05,7.550000,353,730.08,2.225000,749.95,4.500000
+Method,Collisions (F1),Time1 (F1),Probes1 (F1),Time2 (F1),Probes2 (F1),Collisions (F2),Time1 (F2),Probes1 (F2),Time2 (F2),Probes2 (F2)
+Separate Chaining,142,415.71,N/A,301.84,N/A,154,328.84,N/A,294.47,N/A
+Linear Probing,1023,463.93,2.044444,1195.38,12.200000,2348,632.53,4.733333,3412.02,46.622222
+Double Hashing,517,647.18,1.777778,1244.47,11.444444,627,587.91,1.800000,933.36,6.955556

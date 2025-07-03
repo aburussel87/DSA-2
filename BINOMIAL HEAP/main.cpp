@@ -41,7 +41,7 @@ int main() {
                 ss >> key;
                 heap.removeKey(key);
             } else if (cmd == "P") {
-                heap.printHeap(output);
+                heap.printHeap(output,true);
             }
         } catch (...) {
             output << "couldn't execute command: " << line << endl;
