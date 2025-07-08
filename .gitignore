@@ -1,1 +1,2 @@
-*.exe
+*.exe       # ignore .exe in root
+*/.exe      # ignore .exe in immediate folders

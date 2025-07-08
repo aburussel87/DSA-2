@@ -87,74 +87,163 @@ void printData(data &RBT1, data &RBT2, data &LP1, data &LP2, data &DH1, data &DH
 
 void collectData(mt19937 &gen, int N, vector<string> &words, data &RBT, data &LP, data &DH, int total, bool useHash2)
 {
+    int x = 0;
     HashTable vaultx(N, 5);
     vector<string> insertedWords;
-    for (int i = 0; i < total; i++)
+    int count  = 0;
+    while(count <= total)
     {
         uniform_int_distribution<> index(0, words.size() - 1);
         int x = index(gen);
-        vaultx.insert(words[x], "RBT", useHash2, RBT.collisions);
+        if(!vaultx.insert(words[x], "RBT", useHash2, RBT.collisions)){
+            continue;
+        }
         vaultx.insert(words[x], "LP", useHash2, LP.collisions);
         vaultx.insert(words[x], "DH", useHash2, DH.collisions);
         insertedWords.push_back(words[x]);
+        count++;
     }
 
     int toSearch = total / 10;
+
+    int foundRBT_before = 0, notFoundRBT_before = 0;
+    int foundLP_before = 0, notFoundLP_before = 0;
+    int foundDH_before = 0, notFoundDH_before = 0;
+
     for (int i = 0; i < toSearch; i++)
     {
         uniform_int_distribution<> index(0, insertedWords.size() - 1);
         int x = index(gen);
+
         int probes = 0;
         long long time_taken = 0;
-        vaultx.find(insertedWords[x], "RBT", probes, time_taken, useHash2);
+
+        if (vaultx.find(insertedWords[x], "RBT", probes, time_taken, useHash2))
+        {
+            foundRBT_before++;
+        }
+        else
+        {
+            notFoundRBT_before++;
+        }
         RBT.avg_probes1 += probes;
         RBT.avg_stime1 += time_taken;
-        vaultx.find(insertedWords[x], "LP", probes, time_taken, useHash2);
+
+        probes = 0;
+        time_taken = 0;
+        if (vaultx.find(insertedWords[x], "LP", probes, time_taken, useHash2))
+        {
+            foundLP_before++;
+        }
+        else
+        {
+            notFoundLP_before++;
+        }
         LP.avg_probes1 += probes;
         LP.avg_stime1 += time_taken;
-        vaultx.find(insertedWords[x], "DH", probes, time_taken, useHash2);
+
+        probes = 0;
+        time_taken = 0;
+        if (vaultx.find(insertedWords[x], "DH", probes, time_taken, useHash2))
+        {
+            foundDH_before++;
+        }
+        else
+        {
+            notFoundDH_before++;
+        }
         DH.avg_probes1 += probes;
         DH.avg_stime1 += time_taken;
     }
-    vector<string> toRemove;
+
+    cout << "Before Deletion:\n";
+    cout << "Searched For: " << toSearch << endl;
+    cout << "RBT found: " << foundRBT_before << ", not found: " << notFoundRBT_before << endl;
+    cout << "LP  found: " << foundLP_before << ", not found: " << notFoundLP_before << endl;
+    cout << "DH  found: " << foundDH_before << ", not found: " << notFoundDH_before << endl;
+
+    vector<string> removed;
     for (int i = 0; i < toSearch; i++)
     {
         uniform_int_distribution<> index(0, insertedWords.size() - 1);
         int x = index(gen);
-        toRemove.push_back(insertedWords[x]);
+        removed.push_back(insertedWords[x]);
+
         vaultx.remove(insertedWords[x], "RBT", useHash2);
         vaultx.remove(insertedWords[x], "LP", useHash2);
         vaultx.remove(insertedWords[x], "DH", useHash2);
+        insertedWords.erase(insertedWords.begin() + x);
     }
+
+    int found1 = 0, found2 = 0, found3 = 0;
+    int nfound1 = 0, nfound2 = 0, nfound3 = 0;
+
     for (int i = 0; i < toSearch; i++)
     {
         int x;
         string word;
         if (i <= toSearch / 2)
         {
-            uniform_int_distribution<> index(0, toRemove.size() - 1);
+            uniform_int_distribution<> index(0, removed.size() - 1);
             x = index(gen);
-            word = toRemove[x];
+            word = removed[x];
         }
         else
         {
             uniform_int_distribution<> index(0, insertedWords.size() - 1);
             x = index(gen);
-            word = toRemove[x];
+            word = insertedWords[x];
         }
+
         int probes = 0;
         long long time_taken = 0;
-        vaultx.find(word, "RBT", probes, time_taken, useHash2);
+
+        if (vaultx.find(word, "RBT", probes, time_taken, useHash2))
+        {
+            found1++;
+        }
+        else
+        {
+            nfound1++;
+        }
         RBT.avg_probes2 += probes;
         RBT.avg_stime2 += time_taken;
-        vaultx.find(word, "LP", probes, time_taken, useHash2);
+
+        probes = 0;
+        time_taken = 0;
+        if (vaultx.find(word, "LP", probes, time_taken, useHash2))
+        {
+            found2++;
+        }
+        else
+        {
+            nfound2++;
+        }
         LP.avg_probes2 += probes;
         LP.avg_stime2 += time_taken;
-        vaultx.find(word, "DH", probes, time_taken, useHash2);
+
+        probes = 0;
+        time_taken = 0;
+        if (vaultx.find(word, "DH", probes, time_taken, useHash2))
+        {
+            found3++;
+        }
+        else
+        {
+            nfound3++;
+        }
         DH.avg_probes2 += probes;
         DH.avg_stime2 += time_taken;
     }
+
+    cout << "\nAfter Deletion:\n";
+    cout << "Searched For: " << toSearch << endl;
+    cout << "Removed: " << removed.size() << endl;
+    cout << "RBT found: " << found1 << ", not found: " << nfound1 << endl;
+    cout << "LP  found: " << found2 << ", not found: " << nfound2 << endl;
+    cout << "DH  found: " << found3 << ", not found: " << nfound3 << endl;
 }
+
 
 int main()
 {
