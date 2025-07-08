@@ -15,7 +15,6 @@ private:
     int hash2(const string &word);
     int nextPrime(int n);
     bool isPrime(int n);
-
 public:
     HashTable(int n, int s);
     ~HashTable();
