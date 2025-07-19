@@ -156,12 +156,6 @@ void collectData(mt19937 &gen, int N, vector<string> &words, data &RBT, data &LP
         DH.avg_stime1 += time_taken;
     }
 
-    cout << "Before Deletion:\n";
-    cout << "Searched For: " << toSearch << endl;
-    cout << "RBT found: " << foundRBT_before << ", not found: " << notFoundRBT_before << endl;
-    cout << "LP  found: " << foundLP_before << ", not found: " << notFoundLP_before << endl;
-    cout << "DH  found: " << foundDH_before << ", not found: " << notFoundDH_before << endl;
-
     vector<string> removed;
     for (int i = 0; i < toSearch; i++)
     {
@@ -235,13 +229,6 @@ void collectData(mt19937 &gen, int N, vector<string> &words, data &RBT, data &LP
         DH.avg_probes2 += probes;
         DH.avg_stime2 += time_taken;
     }
-
-    cout << "\nAfter Deletion:\n";
-    cout << "Searched For: " << toSearch << endl;
-    cout << "Removed: " << removed.size() << endl;
-    cout << "RBT found: " << found1 << ", not found: " << nfound1 << endl;
-    cout << "LP  found: " << found2 << ", not found: " << nfound2 << endl;
-    cout << "DH  found: " << found3 << ", not found: " << nfound3 << endl;
 }
 
 
