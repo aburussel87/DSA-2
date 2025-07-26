@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red-Black Tree Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        input[type="number"] {
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1; /* Slate-300 */
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 80px;
+            text-align: center;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            outline: none;
+        }
+        input[type="number"]:focus {
+            border-color: #6366f1; /* Indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        button {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-primary {
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+        }
+        .btn-danger {
+            background-color: #ef4444; /* Red-500 */
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626; /* Red-600 */
+        }
+        .btn-secondary {
+            background-color: #e2e8f0; /* Slate-200 */
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background-color: #cbd5e1; /* Slate-300 */
+        }
+        .tree-container {
+            width: 100%;
+            overflow-x: auto; /* Allow horizontal scrolling for wide trees */
+            border: 1px solid #e2e8f0; /* Slate-200 */
+            border-radius: 12px;
+            background-color: #f8fafc; /* Slate-50 */
+            min-height: 400px; /* Minimum height for the visualization area */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align tree to the top */
+            position: relative;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
+            min-width: 800px; /* Ensure SVG has a minimum width */
+            min-height: 400px; /* Ensure SVG has a minimum height */
+        }
+        .node-circle {
+            transition: fill 0.8s ease-in-out, cx 1.5s ease-in-out, cy 1.5s ease-in-out, opacity 0.8s ease-in-out; /* Increased transition duration for cx, cy, opacity */
+            stroke: #333;
+            stroke-width: 2px;
+        }
+        .node-text {
+            fill: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            user-select: none;
+            transition: cx 1.5s ease-in-out, cy 1.5s ease-in-out, opacity 0.8s ease-in-out; /* Increased transition duration for cx, cy, opacity */
+        }
+        .line {
+            stroke: #64748b; /* Slate-500 */
+            stroke-width: 2px;
+            transition: x1 1.5s ease-in-out, y1 1.5s ease-in-out, x2 1.5s ease-in-out, y2 1.5s ease-in-out, opacity 0.8s ease-in-out; /* Increased transition duration for line coordinates and opacity */
+        }
+        .red {
+            fill: #ef4444; /* Red-500 */
+        }
+        .black {
+            fill: #333; /* Black */
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            text-align: center;
+        }
+        .message-box button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-6 text-indigo-700">Red-Black Tree Simulation</h1>
+
+        <div class="controls">
+            <div class="input-group">
+                <input type="number" id="insertValue" placeholder="Value">
+                <button id="insertBtn" class="btn-primary">Insert</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="deleteValue" placeholder="Value">
+                <button id="deleteBtn" class="btn-danger">Delete</button>
+            </div>
+            <button id="resetBtn" class="btn-secondary">Reset Tree</button>
+        </div>
+
+        <div class="tree-container">
+            <svg id="treeSvg"></svg>
+        </div>
+    </div>
+
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="messageBoxOkBtn">OK</button>
+    </div>
+
+    <script>
+        // --- Utility Functions ---
+        const animationDelay = 1500; // 1.5 seconds for each step animation
+
+        function showMessageBox(message) {
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            const okButton = document.getElementById('messageBoxOkBtn');
+
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+
+            return new Promise(resolve => {
+                const clickHandler = () => {
+                    messageBox.style.display = 'none';
+                    okButton.removeEventListener('click', clickHandler); // Clean up listener
+                    resolve();
+                };
+                okButton.addEventListener('click', clickHandler);
+            });
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function setButtonsDisabled(disabled) {
+            document.getElementById('insertBtn').disabled = disabled;
+            document.getElementById('deleteBtn').disabled = disabled;
+            document.getElementById('resetBtn').disabled = disabled;
+        }
+
+        // --- Red-Black Tree Node Class ---
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.color = 'RED'; // New nodes are always red
+                this.parent = null;
+                this.left = null;
+                this.right = null;
+                // For visualization
+                this.x = 0;
+                this.y = 0;
+                this.level = 0;
+                this.svgCircle = null; // Reference to the SVG circle element
+                this.svgText = null;   // Reference to the SVG text element
+            }
+        }
+
+        // --- Red-Black Tree Class ---
+        class RedBlackTree {
+            constructor() {
+                this.NIL = new Node(null); // Sentinel node for leaves and null children
+                this.NIL.color = 'BLACK';
+                this.root = this.NIL;
+            }
+
+            // Helper to check if a node is NIL
+            isNIL(node) {
+                return node === this.NIL;
+            }
+
+            // --- Insertion ---
+            async insert(value) {
+                setButtonsDisabled(true);
+                console.log(`Attempting to insert: ${value}`);
+                const newNode = new Node(value);
+                newNode.left = this.NIL;
+                newNode.right = this.NIL;
+
+                let y = this.NIL;
+                let x = this.root;
+
+                while (!this.isNIL(x)) {
+                    console.log(`  Current node (x): ${x.value}, Parent (y): ${this.isNIL(y) ? 'NIL' : y.value}`);
+                    y = x;
+                    if (newNode.value < x.value) {
+                        x = x.left;
+                        console.log(`  Moving left. Next x: ${this.isNIL(x) ? 'NIL' : x.value}`);
+                    } else if (newNode.value > x.value) {
+                        x = x.right;
+                        console.log(`  Moving right. Next x: ${this.isNIL(x) ? 'NIL' : x.value}`);
+                    } else { // newNode.value === x.value, it's a duplicate
+                        await showMessageBox(`Value ${value} already exists in the tree. No insertion needed.`);
+                        console.log(`  Duplicate value detected: ${value}`);
+                        setButtonsDisabled(false);
+                        return; // Value already exists, do not insert
+                    }
+                }
+
+                newNode.parent = y;
+                if (this.isNIL(y)) {
+                    this.root = newNode;
+                    console.log(`  New node ${value} set as root.`);
+                } else if (newNode.value < y.value) {
+                    y.left = newNode;
+                    console.log(`  New node ${value} set as left child of ${y.value}.`);
+                } else {
+                    y.right = newNode;
+                    console.log(`  New node ${value} set as right child of ${y.value}.`);
+                }
+
+                this.updateNodePositions();
+                this.drawTree();
+                await delay(animationDelay); // Show initial insertion before fixup
+
+                await this.insertFixup(newNode);
+                this.updateNodePositions(); // Final position update
+                this.drawTree(); // Final draw
+                console.log(`Insertion of ${value} completed.`);
+                setButtonsDisabled(false);
+            }
+
+            async insertFixup(z) {
+                while (z.parent.color === 'RED') {
+                    if (z.parent === z.parent.parent.left) {
+                        let y = z.parent.parent.right; // uncle
+                        if (y.color === 'RED') {
+                            // Case 1: Uncle is red
+                            await showMessageBox("Insert Fixup: Case 1 - Parent and Uncle are RED. Recoloring Parent, Uncle to BLACK and Grandparent to RED. Then move up to Grandparent.");
+                            z.parent.color = 'BLACK';
+                            y.color = 'BLACK';
+                            z.parent.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay);
+                            z = z.parent.parent;
+                        } else {
+                            if (z === z.parent.right) {
+                                // Case 2: Uncle is black and z is a right child
+                                await showMessageBox("Insert Fixup: Case 2 - Uncle is BLACK, current node is Right child. Perform Left Rotation on Parent.");
+                                z = z.parent;
+                                await this.rotateLeft(z); // Rotation is now awaited
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay);
+                            }
+                            // Case 3: Uncle is black and z is a left child
+                            await showMessageBox("Insert Fixup: Case 3 - Uncle is BLACK, current node is Left child. Recoloring Parent to BLACK and Grandparent to RED, then perform Right Rotation on Grandparent.");
+                            z.parent.color = 'BLACK';
+                            z.parent.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change before final rotation
+                            await this.rotateRight(z.parent.parent); // Rotation is now awaited
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay);
+                        }
+                    } else { // Symmetric case: z.parent is right child of z.parent.parent
+                        let y = z.parent.parent.left; // uncle
+                        if (y.color === 'RED') {
+                            // Case 1: Uncle is red (symmetric)
+                            await showMessageBox("Insert Fixup: Case 1 (Symmetric) - Parent and Uncle are RED. Recoloring Parent, Uncle to BLACK and Grandparent to RED. Then move up to Grandparent.");
+                            z.parent.color = 'BLACK';
+                            y.color = 'BLACK';
+                            z.parent.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay);
+                            z = z.parent.parent;
+                        } else {
+                            if (z === z.parent.left) {
+                                // Case 2: Uncle is black and z is a left child (symmetric)
+                                await showMessageBox("Insert Fixup: Case 2 (Symmetric) - Uncle is BLACK, current node is Left child. Perform Right Rotation on Parent.");
+                                z = z.parent;
+                                await this.rotateRight(z); // Rotation is now awaited
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay);
+                            }
+                            // Case 3: Uncle is black and z is a right child (symmetric)
+                            await showMessageBox("Insert Fixup: Case 3 (Symmetric) - Uncle is BLACK, current node is Right child. Recoloring Parent to BLACK and Grandparent to RED, then perform Left Rotation on Grandparent.");
+                            z.parent.color = 'BLACK';
+                            z.parent.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change before final rotation
+                            await this.rotateLeft(z.parent.parent); // Rotation is now awaited
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay);
+                        }
+                    }
+                }
+                this.root.color = 'BLACK'; // Root must always be black
+                this.updateNodePositions();
+                this.drawTree();
+                await delay(animationDelay); // Final delay after root color change
+            }
+
+            // --- Deletion ---
+            async delete(value) {
+                setButtonsDisabled(true);
+                let z = this.search(value);
+                if (this.isNIL(z)) {
+                    await showMessageBox(`Value ${value} not found in the tree.`);
+                    setButtonsDisabled(false);
+                    return;
+                }
+
+                // Fade out the node to be deleted
+                if (z.svgCircle) z.svgCircle.style.opacity = '0';
+                if (z.svgText) z.svgText.style.opacity = '0';
+                await delay(500); // Wait for fade out transition
+
+                let y = z;
+                let yOriginalColor = y.color;
+                let x;
+
+                if (this.isNIL(z.left)) {
+                    x = z.right;
+                    this.transplant(z, z.right);
+                } else if (this.isNIL(z.right)) {
+                    x = z.left;
+                    this.transplant(z, z.left);
+                } else {
+                    y = this.minimum(z.right);
+                    yOriginalColor = y.color;
+                    x = y.right;
+                    if (y.parent === z) {
+                        x.parent = y;
+                    } else {
+                        this.transplant(y, y.right);
+                        y.right = z.right;
+                        y.right.parent = y;
+                    }
+                    this.transplant(z, y);
+                    y.left = z.left;
+                    y.left.parent = y;
+                    y.color = z.color;
+                }
+
+                this.updateNodePositions(); // Update positions after structural change
+                this.drawTree(); // Redraw tree to show structural change
+                await delay(animationDelay); // Pause after structural change
+
+                if (yOriginalColor === 'BLACK') {
+                    await this.deleteFixup(x);
+                }
+                this.updateNodePositions(); // Final position update
+                this.drawTree(); // Final draw
+                setButtonsDisabled(false);
+            }
+
+            async deleteFixup(x) {
+                while (x !== this.root && x.color === 'BLACK') {
+                    if (x === x.parent.left) {
+                        let w = x.parent.right; // Sibling
+                        if (w.color === 'RED') {
+                            // Case 1: Sibling is red
+                            await showMessageBox("Delete Fixup: Case 1 - Sibling is RED. Recoloring Sibling to BLACK and Parent to RED, then perform Left Rotation on Parent.");
+                            w.color = 'BLACK';
+                            x.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change
+                            await this.rotateLeft(x.parent);
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show rotation
+                            w = x.parent.right;
+                        }
+                        if (w.left.color === 'BLACK' && w.right.color === 'BLACK') {
+                            // Case 2: Sibling is black, both children are black
+                            await showMessageBox("Delete Fixup: Case 2 - Sibling is BLACK, both children are BLACK. Recoloring Sibling to RED. Move up to Parent.");
+                            w.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change
+                            x = x.parent;
+                        } else {
+                            if (w.right.color === 'BLACK') {
+                                // Case 3: Sibling is black, left child red, right child black
+                                await showMessageBox("Delete Fixup: Case 3 - Sibling is BLACK, Left child is RED, Right child is BLACK. Recoloring Left child to BLACK and Sibling to RED, then perform Right Rotation on Sibling.");
+                                w.left.color = 'BLACK';
+                                w.color = 'RED';
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay); // Show color change
+                                await this.rotateRight(w);
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay); // Show rotation
+                                w = x.parent.right;
+                            }
+                            // Case 4: Sibling is black, right child is red
+                            await showMessageBox("Delete Fixup: Case 4 - Sibling is BLACK, Right child is RED. Recoloring Sibling to Parent's color, Parent to BLACK, Right child to BLACK. Perform Left Rotation on Parent.");
+                            w.color = x.parent.color;
+                            x.parent.color = 'BLACK';
+                            w.right.color = 'BLACK';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color changes
+                            await this.rotateLeft(x.parent);
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show rotation
+                            x = this.root; // Terminate loop
+                        }
+                    } else { // Symmetric case: x is right child
+                        let w = x.parent.left; // Sibling
+                        if (w.color === 'RED') {
+                            // Case 1: Sibling is red (symmetric)
+                            await showMessageBox("Delete Fixup: Case 1 (Symmetric) - Sibling is RED. Recoloring Sibling to BLACK and Parent to RED, then perform Right Rotation on Parent.");
+                            w.color = 'BLACK';
+                            x.parent.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change
+                            await this.rotateRight(x.parent);
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show rotation
+                            w = x.parent.left;
+                        }
+                        if (w.right.color === 'BLACK' && w.left.color === 'BLACK') {
+                            // Case 2: Sibling is black, both children are black (symmetric)
+                            await showMessageBox("Delete Fixup: Case 2 (Symmetric) - Sibling is BLACK, both children are BLACK. Recoloring Sibling to RED. Move up to Parent.");
+                            w.color = 'RED';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color change
+                            x = x.parent;
+                        } else {
+                            if (w.left.color === 'BLACK') {
+                                // Case 3: Sibling is black, right child red, left child black (symmetric)
+                                await showMessageBox("Delete Fixup: Case 3 (Symmetric) - Sibling is BLACK, Right child is RED, Left child is BLACK. Recoloring Right child to BLACK and Sibling to RED, then perform Left Rotation on Sibling.");
+                                w.right.color = 'BLACK';
+                                w.color = 'RED';
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay); // Show color change
+                                await this.rotateLeft(w);
+                                this.updateNodePositions();
+                                this.drawTree();
+                                await delay(animationDelay); // Show rotation
+                                w = x.parent.left;
+                            }
+                            // Case 4: Sibling is black, left child is red (symmetric)
+                            await showMessageBox("Delete Fixup: Case 4 (Symmetric) - Sibling is BLACK, Left child is RED. Recoloring Sibling to Parent's color, Parent to BLACK, Left child to BLACK. Perform Right Rotation on Parent.");
+                            w.color = x.parent.color;
+                            x.parent.color = 'BLACK';
+                            w.left.color = 'BLACK';
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show color changes
+                            await this.rotateRight(x.parent);
+                            this.updateNodePositions();
+                            this.drawTree();
+                            await delay(animationDelay); // Show rotation
+                            x = this.root; // Terminate loop
+                        }
+                    }
+                }
+                x.color = 'BLACK'; // Ensure x is black
+                this.updateNodePositions();
+                this.drawTree();
+                await delay(animationDelay); // Final delay after root color change
+            }
+
+            transplant(u, v) {
+                if (this.isNIL(u.parent)) {
+                    this.root = v;
+                } else if (u === u.parent.left) {
+                    u.parent.left = v;
+                } else {
+                    u.parent.right = v;
+                }
+                v.parent = u.parent;
+            }
+
+            minimum(node) {
+                while (!this.isNIL(node.left)) {
+                    node = node.left;
+                }
+                return node;
+            }
+
+            // --- Rotations ---
+            async rotateLeft(x) {
+                let y = x.right;
+                x.right = y.left;
+                if (!this.isNIL(y.left)) {
+                    y.left.parent = x;
+                }
+                y.parent = x.parent;
+                if (this.isNIL(x.parent)) {
+                    this.root = y;
+                } else if (x === x.parent.left) {
+                    x.parent.left = y;
+                } else {
+                    x.parent.right = y;
+                }
+                y.left = x;
+                x.parent = y;
+                // No intermediate delays within rotate functions themselves,
+                // as the fixup calls will handle the step-by-step visualization.
+            }
+
+            async rotateRight(x) {
+                let y = x.left;
+                x.left = y.right;
+                if (!this.isNIL(y.right)) {
+                    y.right.parent = x;
+                }
+                y.parent = x.parent;
+                if (this.isNIL(x.parent)) {
+                    this.root = y;
+                } else if (x === x.parent.right) {
+                    x.parent.right = y;
+                } else {
+                    x.parent.left = y;
+                }
+                y.right = x;
+                x.parent = y;
+                // No intermediate delays within rotate functions themselves,
+                // as the fixup calls will handle the step-by-step visualization.
+            }
+
+            // --- Search ---
+            search(value) {
+                let current = this.root;
+                while (!this.isNIL(current) && value !== current.value) {
+                    if (value < current.value) {
+                        current = current.left;
+                    } else {
+                        current = current.right;
+                    }
+                }
+                return current;
+            }
+
+            // --- Traversal for Visualization (In-order) ---
+            getNodesInOrder() {
+                const nodes = [];
+                const stack = [];
+                let current = this.root;
+
+                while (!this.isNIL(current) || stack.length > 0) {
+                    while (!this.isNIL(current)) {
+                        stack.push(current);
+                        current = current.left;
+                    }
+                    current = stack.pop();
+                    if (!this.isNIL(current)) {
+                        nodes.push(current);
+                    }
+                    current = current.right;
+                }
+                return nodes;
+            }
+
+            // --- Reset Tree ---
+            async reset() {
+                setButtonsDisabled(true);
+                this.root = this.NIL;
+                this.drawTree(); // Clear all nodes and lines
+                await showMessageBox("Tree has been reset.");
+                setButtonsDisabled(false);
+            }
+
+            // --- Visualization Logic ---
+            updateNodePositions() {
+                const nodeRadius = 25;
+                const horizontalSpacing = 60; // Increased spacing
+                const verticalSpacing = 80; // Increased spacing
+
+                const svg = document.getElementById('treeSvg');
+                const svgWidth = svg.clientWidth;
+                // const svgHeight = svg.clientHeight; // Not directly used for positioning, but for min-height
+
+                // Calculate max level for dynamic SVG height
+                let maxLevel = 0;
+                const calculateLevels = (node, level) => {
+                    if (this.isNIL(node)) return;
+                    node.level = level;
+                    maxLevel = Math.max(maxLevel, level);
+                    calculateLevels(node.left, level + 1);
+                    calculateLevels(node.right, level + 1);
+                };
+                calculateLevels(this.root, 0);
+
+                // Adjust SVG height based on max level
+                const requiredHeight = (maxLevel + 1) * verticalSpacing + 50;
+                svg.style.minHeight = `${Math.max(400, requiredHeight)}px`; // Ensure min height
+
+                // Use a map to store the x-position for each node based on in-order traversal
+                const nodeXPositions = new Map();
+                let xOffset = 0;
+                const assignXPositions = (node) => {
+                    if (this.isNIL(node)) return;
+                    assignXPositions(node.left);
+                    nodeXPositions.set(node.value, xOffset);
+                    xOffset += horizontalSpacing;
+                    assignXPositions(node.right);
+                };
+                assignXPositions(this.root);
+
+                // Center the tree horizontally
+                const totalWidth = xOffset;
+                const startX = (svgWidth / 2) - (totalWidth / 2) + nodeRadius;
+
+                const setNodeCoords = (node) => {
+                    if (this.isNIL(node)) return;
+                    node.x = startX + nodeXPositions.get(node.value);
+                    node.y = node.level * verticalSpacing + nodeRadius + 20; // Add some top margin
+
+                    setNodeCoords(node.left);
+                    setNodeCoords(node.right);
+                };
+                setNodeCoords(this.root);
+            }
+
+            drawTree() {
+                const svg = document.getElementById('treeSvg');
+                const nodeRadius = 25;
+
+                // Store references to existing SVG elements by their data-value
+                const existingCircles = new Map();
+                const existingTexts = new Map();
+                // We'll regenerate lines for simplicity and rely on CSS transitions
+
+                // Populate maps with current SVG elements
+                Array.from(svg.children).forEach(element => {
+                    const value = element.getAttribute('data-value');
+                    if (value !== null) { // Check for data-value attribute
+                        if (element.tagName === 'circle') {
+                            existingCircles.set(parseInt(value), element);
+                        } else if (element.tagName === 'text') {
+                            existingTexts.set(parseInt(value), element);
+                        }
+                    }
+                });
+
+                const nodesToDraw = [];
+                const linesToDraw = [];
+
+                // Collect all nodes and lines from the current tree structure
+                const queue = [this.root];
+                while (queue.length > 0) {
+                    const node = queue.shift();
+
+                    if (this.isNIL(node)) continue;
+
+                    nodesToDraw.push(node);
+
+                    // Prepare line data
+                    if (!this.isNIL(node.parent)) {
+                        linesToDraw.push({
+                            parent: node.parent,
+                            child: node
+                        });
+                    }
+
+                    if (!this.isNIL(node.left)) {
+                        queue.push(node.left);
+                    }
+                    if (!this.isNIL(node.right)) {
+                        queue.push(node.right);
+                    }
+                }
+
+                // --- Update/Create Nodes ---
+                const nodesKept = new Set();
+                nodesToDraw.forEach(node => {
+                    let circle = existingCircles.get(node.value);
+                    let text = existingTexts.get(node.value);
+
+                    if (!circle) {
+                        // Create new circle if it doesn't exist
+                        circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute("r", nodeRadius);
+                        circle.setAttribute("data-value", node.value);
+                        circle.style.opacity = '0'; // Start invisible for new nodes
+                        svg.appendChild(circle);
+                        // Animate in new nodes after a short delay
+                        setTimeout(() => circle.style.opacity = '1', 50);
+                    }
+                    if (!text) {
+                        // Create new text if it doesn't exist
+                        text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                        text.setAttribute("text-anchor", "middle");
+                        text.setAttribute("class", "node-text");
+                        text.setAttribute("data-value", node.value);
+                        text.textContent = node.value;
+                        text.style.opacity = '0'; // Start invisible for new nodes
+                        svg.appendChild(text);
+                        // Animate in new nodes after a short delay
+                        setTimeout(() => text.style.opacity = '1', 50);
+                    }
+
+                    // Update attributes for existing or new elements
+                    circle.setAttribute("cx", node.x);
+                    circle.setAttribute("cy", node.y);
+                    circle.setAttribute("class", `node-circle ${node.color.toLowerCase()}`);
+
+                    text.setAttribute("x", node.x);
+                    text.setAttribute("y", node.y + 5); // Adjust for vertical centering
+
+                    node.svgCircle = circle; // Store reference on the node object
+                    node.svgText = text;     // Store reference on the node object
+                    nodesKept.add(node.value);
+                });
+
+                // --- Remove old nodes (circles and texts) ---
+                Array.from(existingCircles.keys()).forEach(value => {
+                    if (!nodesKept.has(value)) {
+                        const circleToRemove = existingCircles.get(value);
+                        const textToRemove = existingTexts.get(value);
+                        if (circleToRemove) {
+                            circleToRemove.style.opacity = '0'; // Fade out
+                            setTimeout(() => circleToRemove.remove(), 500); // Remove after transition
+                        }
+                        if (textToRemove) {
+                            textToRemove.style.opacity = '0'; // Fade out
+                            setTimeout(() => textToRemove.remove(), 500); // Remove after transition
+                        }
+                    }
+                });
+
+                // --- Update/Create Lines ---
+                // For simplicity and to avoid complex line tracking, we'll remove all lines and redraw them.
+                // The transition on 'line' elements will still apply to their coordinates.
+                Array.from(svg.children).filter(el => el.tagName === 'line').forEach(line => line.remove());
+
+                linesToDraw.forEach(lineData => {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", lineData.parent.x);
+                    line.setAttribute("y1", lineData.parent.y);
+                    line.setAttribute("x2", lineData.child.x);
+                    line.setAttribute("y2", lineData.child.y);
+                    line.setAttribute("class", "line");
+                    svg.prepend(line); // Prepend lines so they are behind nodes
+                });
+
+                // If tree is empty, ensure all elements are removed
+                if (this.isNIL(this.root)) {
+                    Array.from(svg.children).forEach(element => {
+                        element.style.opacity = '0';
+                        setTimeout(() => element.remove(), 500);
+                    });
+                }
+            }
+        }
+
+        // --- Event Listeners and Initialization ---
+        const tree = new RedBlackTree();
+
+        document.getElementById('insertBtn').addEventListener('click', async () => {
+            const value = parseInt(document.getElementById('insertValue').value);
+            if (!isNaN(value)) {
+                await tree.insert(value);
+                document.getElementById('insertValue').value = '';
+            } else {
+                showMessageBox("Please enter a valid number to insert.");
+            }
+        });
+
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            const value = parseInt(document.getElementById('deleteValue').value);
+            if (!isNaN(value)) {
+                await tree.delete(value);
+                document.getElementById('deleteValue').value = '';
+            } else {
+                showMessageBox("Please enter a valid number to delete.");
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            tree.reset();
+        });
+
+        // Initial draw (empty tree)
+        window.onload = () => {
+            tree.drawTree();
+        };
+
+        // Redraw on window resize to adjust centering and SVG size
+        window.addEventListener('resize', () => {
+            tree.updateNodePositions();
+            tree.drawTree();
+        });
+    </script>
+</body>
+</html>
